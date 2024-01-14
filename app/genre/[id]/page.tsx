@@ -1,3 +1,5 @@
+import MoviesCarousel from "@/components/MoviesCarousel";
+import { getDiscoverMovies } from "@/lib/getMovies";
 import { notFound } from "next/navigation";
 
 interface GenrePageProps {
@@ -9,18 +11,22 @@ interface GenrePageProps {
   };
 }
 
-function GenrePage({ params, searchParams }: GenrePageProps) {
+async function GenrePage({ params, searchParams }: GenrePageProps) {
   const { id } = params;
   const { genre } = searchParams;
 
   if (!id) notFound();
 
-  // @todo api call to get search movies
-  // @todo api call to get popular movies
+  const movies = await getDiscoverMovies(id);
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-between p-24">
-      Welcome to the genre with ID {id} & name {genre}
+    <div className="max-w-7xl mx-auto">
+      {/* @todo AI suggestions */}
+      <div className="flex flex-col space-y-4 mt-32 xl:mt-42">
+        <h1 className="text-6xl font-bold px-10">Results for {genre}</h1>
+
+        <MoviesCarousel title="Genre" movies={movies} isVertical />
+      </div>
     </div>
   );
 }
