@@ -1,3 +1,5 @@
+import MoviesCarousel from "@/components/MoviesCarousel";
+import { getPopularMovies, getSearchedMovies } from "@/lib/getMovies";
 import { notFound } from "next/navigation";
 
 interface SearchPageProps {
@@ -6,19 +8,24 @@ interface SearchPageProps {
   };
 }
 
-function SearchPage({ params }: SearchPageProps) {
-  const { term } = params;
+async function SearchPage({ params: { term: queryTerm } }: SearchPageProps) {
+  if (!queryTerm) notFound();
 
-  if (!term) notFound();
+  const term = decodeURI(queryTerm);
 
-  const termToUse = decodeURI(term);
-
-  // @todo api call to get search movies
-  // @todo api call to get popular movies
+  const movies = await getSearchedMovies(term);
+  const popularMovies = await getPopularMovies();
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-between p-24">
-      SearchTermsPage {term} {termToUse}
+    <div className="max-w-7xl mx-auto">
+      <div className="flex flex-col space-y-4 mt-32 xl:mt-42">
+        <h1 className="text-6xl font-bold px-10">Results for {term}</h1>
+
+        {/* @todo AI suggestions */}
+
+        <MoviesCarousel title="Movies" movies={movies} isVertical />
+        <MoviesCarousel title="You may also like" movies={popularMovies} />
+      </div>
     </div>
   );
 }
